@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema({
   password: {type : String, required: true},
   profilePic: String,
   joinedActivities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],
-});
+  createdActivities:[{type: mongoose.Schema.Types.ObjectId, ref: "Activity"}]
+  
+}, {timestamps:true}
+);
 
 export default mongoose.model("User", userSchema);

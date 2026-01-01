@@ -1,14 +1,45 @@
+import { getRandomImage } from "../constants/activityImages";
+import { useNavigate } from "react-router";
+
 export default function ActivityCard({ activity }) {
+  const navigate = useNavigate();
+  const image = getRandomImage();
+
   return (
-    <div className="bg-white shadow rounded-lg p-4">
-      <h3 className="text-lg font-bold">{activity.name}</h3>
-      <p className="text-sm text-gray-500">{activity.type}</p>
-      <p className="mt-2">{activity.description}</p>
-      <p className="text-sm mt-1">📍 {activity.location}</p>
-      <p className="text-sm">🗓 {activity.date}</p>
-      <button type="button" className="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer" >
-        Join
-      </button>
+    <div
+      onClick={() => navigate(`/activities/${activity._id}`)}
+      className="min-w-[280px] max-w-[280px]
+                 bg-white rounded-2xl shadow-md
+                 overflow-hidden cursor-pointer
+                 hover:scale-[1.02] transition"
+    >
+      {/* IMAGE */}
+      <div className="h-40 w-full overflow-hidden">
+        <img
+          src={image}
+          alt={activity.title}
+          className="h-full w-full object-cover"
+        />
+      </div>
+
+      {/* CONTENT */}
+      <div className="p-4">
+        <h3 className="font-semibold text-lg line-clamp-1">
+          {activity.title}
+        </h3>
+
+        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+          {activity.description}
+        </p>
+
+        <div className="mt-3 text-sm text-gray-500">
+          📍 {activity.location?.name || "Nearby"}
+        </div>
+
+        <div className="mt-1 text-sm text-gray-500">
+          👥 {activity.participants?.length || 0} joined
+        </div>
+      </div>
     </div>
   );
 }

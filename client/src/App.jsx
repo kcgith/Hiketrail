@@ -1,16 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
+import { BrowserRouter } from "react-router";
+import AppLayout from "./AppLayout";
 
-
-export default function App() {
+function App() {
   return (
-    <Router>
-      
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* <Route path="/login" element={<Login />} /> */}
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
   );
 }
+
+export default App;

@@ -4,26 +4,25 @@ import User from "../models/User.js";
 export const protect = async (req, res, next) => {
   let token;
 
-  // Check if the token exists in Authorization header
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     try {
-      // Extract token from "Bearer <token>"
       token = req.headers.authorization.split(" ")[1];
 
-      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Attach user to request (excluding password)
       req.user = await User.findById(decoded.id).select("-password");
 
-      next();
+      return next();   // ✅ VERY IMPORTANT — STOP EXECUTION HERE
+
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: "Not authorized, token failed" });
+      return res.status(401).json({ message: "Not authorized, token failed" });
     }
   }
 
-  if (!token) {
-    res.status(401).json({ message: "Not authorized, no token" });
-  }
+  // If no token in header
+  return res.status(401).json({ message: "Not authorized, no token" });
 };

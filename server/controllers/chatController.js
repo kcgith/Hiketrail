@@ -1,28 +1,34 @@
-import Chat from "../models/Chat.js";
+import Chat from '../models/Chat.js'
 
-export const sendMessage = async (req, res) => {
-  const { activityId, message } = req.body;
-
+export const getChats = async (req, res) => {
   try {
-    const chat = await Chat.create({
-      activity: activityId,
-      user: req.user._id,
-      message
-    });
+    const chats = await Chat.find({
+      activity: req.params.activityId, // ✅ FIX
+    })
+      .populate("sender", "name email avatar")
+      .sort({ createdAt: 1 });
 
-    res.status(201).json(chat);
+    res.json(chats);
   } catch (error) {
-    res.status(500).json({ message: error.message, stack: error.stack });
+    console.error(error);
+    res.status(500).json({ message: "Unable to load chat messages" });
   }
 };
 
-export const getMessages = async (req, res) => {
-  const { activityId } = req.params;
+export const sendChat = async (req, res) => {
+    // console.log("PARAMS:", req.params); 
+    // console.log("BODY:", req.body);
 
   try {
-    const messages = await Chat.find({ activity: activityId }).populate("user", "name");
-    res.json(messages);
+    const newChat = await Chat.create({
+      activity: req.params.activityId, // ✅ FIX
+      sender: req.user._id,
+      text: req.body.text,
+    });
+
+    res.json(newChat);
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error(error);
+    res.status(500).json({ message: "Failed to send chat" });
   }
 };
