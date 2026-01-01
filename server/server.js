@@ -17,23 +17,33 @@ import UserRoutes from "./routes/UserRoutes.js";
 dotenv.config();
 
 const app = express();
+
+const allowedOrigin = process.env.CLIENT_URL;
+
 const server = http.createServer(app); // Create server for socket.io
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
-  }
+    origin: allowedOrigin,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
-// Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // DB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {console.log("MongoDB Connected")
-    console.log("DB NAME:", mongoose.connection.name);
-    console.log("DB HOST:", mongoose.connection.host);
+    // console.log("DB NAME:", mongoose.connection.name);
+    // console.log("DB HOST:", mongoose.connection.host);
   })
   .catch(err => console.error(err));
 
@@ -51,6 +61,7 @@ app.get("/", (req, res) => {
 
 socketHandler(io);
 
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });

@@ -89,7 +89,7 @@ export const getActivityById = async (req, res) => {
 // };
 
 export const getNearbyActivities = async (req, res) => {
-   console.log("Nearby API hit", req.query)
+  //  console.log("Nearby API hit", req.query)
   try {
     const { lat, lng, radius = 5 } = req.query; // radius in km
 
