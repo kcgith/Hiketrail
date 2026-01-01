@@ -2,7 +2,7 @@ import axios from "axios";
 import { triggerAuth } from "../utils/authEvents";
 
 const instance = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Add token to every request automatically

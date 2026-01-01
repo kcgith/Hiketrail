@@ -11,7 +11,7 @@ import LocationTile from "../components/LocationTile";
 import StarRating from "../components/StarRating";
 import { useToast } from "../context/ToastContext";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
+const SOCKET_URL = import.meta.env.VITE_API_URL;
 const socket = io(SOCKET_URL, {
   withCredentials: true,
 });
