@@ -24,7 +24,7 @@ export default function ActivityCard({ activity }) {
 
       {/* CONTENT */}
       <div className="p-4">
-        <h3 className="font-semibold text-lg line-clamp-1">
+        <h3 className="font-semibold text-gray-700 text-lg line-clamp-1">
           {activity.title}
         </h3>
 

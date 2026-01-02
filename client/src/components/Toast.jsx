@@ -1,7 +1,7 @@
 export default function Toast({ message, type }) {
   const colors = {
-    success: "bg-green-600",
-    error: "bg-red-600",
+    success: "bg-green-700",
+    error: "bg-red-700",
     info: "bg-gray-800",
   };
 

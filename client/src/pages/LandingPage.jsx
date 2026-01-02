@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router";
 import SearchAutocomplete from "../components/SearchAutocomplete";
-
+import ActivityCard from "../components/ActivityCard";
+import { useNearbyActivities } from "../hooks/useNearbyActivities";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  
+  const { activities, loading } = useNearbyActivities();
 
   return (
     <div className="w-full overflow-x-hidden">
-
       {/* ================= HERO SECTION ================= */}
       <section
-        className="relative min-h-screen flex items-center justify-center text-white"
+        className="relative min-h-screen text-white flex flex-col justify-between"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/hero1.jpg')",
@@ -19,46 +19,113 @@ export default function LandingPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="relative z-10 text-center px-6 max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-            Get out there.
-            <br />Meet people.
-            <br />Create memories.
-          </h1>
+        {/* ================= HERO CONTENT ================= */}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-6 mt-15">
+          <div className="text-center max-w-3xl w-full">
+            <h1 className="text-2xl md:text-2xl font-bold leading-tight">
+              Get out there.
+              <br />
+              Meet people.
+              <br />
+              Create memories.
+            </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-gray-200">
-            Discover nearby activities. Join real people.
-            Step out of your home and into real experiences.
-          </p>
+            <p className="mt-5 text-lg md:text-xl text-gray-200">
+              Discover nearby activities. Join real people.
+              Step out of your home and into real experiences.
+            </p>
 
-          {/* SEARCH – compact & safe */}
-          <div className="mt-8 flex justify-center">
-            <div className="max-w-md bg-white/95 backdrop-blur-md p-3 rounded-xl shadow-lg text-black">
-              <SearchAutocomplete />
+            {/* SEARCH + CREATE (SAME ROW) */}
+            <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
+              <div className="inline-flex justify-center bg-white/95 backdrop-blur-md p-3 rounded-xl shadow-lg text-black">
+                <SearchAutocomplete />
+              </div>
+
+              <button
+                onClick={() => navigate("/activities/create")}
+                className="
+                  px-6 py-3 bg-green-700 hover:bg-green-800
+                  rounded-xl text-lg font-semibold
+                  whitespace-nowrap
+                "
+              >
+                Create Activity
+              </button>
             </div>
-          </div>
-
-          {/* CTA */}
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              onClick={() => navigate("/home")}
-              className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg text-lg font-semibold"
-            >
-              Explore Nearby
-            </button>
-
-            <button
-              onClick={() => navigate("/activities/create")}
-              className="px-6 py-3 border border-white rounded-lg text-lg hover:bg-white hover:text-black transition"
-            >
-              Create Activity
-            </button>
           </div>
         </div>
 
-        {/* subtle bottom fade */}
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/80 to-transparent" />
-      </section>
+        {/* ================= ACTIVITY CAROUSEL (BOTTOM FIXED) ================= */}
+        <div className="relative z-20 w-full">
+        <div className="bg-black/75 backdrop-blur-md px-4 pt-3 pb-2">
+            <h3 className="text-sm font-semibold mb-2">
+            Activities near you
+            </h3>
+
+            {loading ? (
+            <p className="text-sm text-gray-300">
+                Loading activities…
+            </p>
+            ) : activities.length === 0 ? (
+            <p className="text-sm text-gray-300">
+                No activities yet. Be the first to create one.
+            </p>
+            ) : (
+            <div className="relative">
+                {/* SCROLL CONTAINER */}
+                <div
+                id="landing-activity-carousel"
+                className="
+                    flex items-center gap-5
+            overflow-x-hidden overflow-y-hidden
+            scroll-smooth snap-x snap-mandatory
+            hide-scrollbar
+                "
+                style={{ minHeight: "300px" }}   // 👈 keeps it compact
+                >
+                {activities.map((activity) => (
+                    <div
+                    key={activity._id}
+                    className="snap-start shrink-0 flex place-items-center"
+                    style={{ width: "280px", height: "100%" }}    // 👈 smaller card width
+                    >
+                    <div className="p-4 w-full flex items-end">
+                        <ActivityCard activity={activity} />
+                    </div>
+                    </div>
+                ))}
+                </div>
+
+                {/* RIGHT ARROW */}
+                <button
+                onClick={() => {
+                    const el = document.getElementById("landing-activity-carousel");
+                    el?.scrollBy({ left: 220, behavior: "smooth" });
+                }}
+                className="
+                    absolute right-0 top-1/2 -translate-y-1/2
+                    bg-black/70 hover:bg-black
+                    text-white
+                    p-2 rounded-full
+                    backdrop-blur
+                "
+                aria-label="Scroll activities"
+                >
+                ▶
+                </button>
+
+                {/* FADE ON RIGHT */}
+                <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black/80 to-transparent" />
+            </div>
+            )}
+        </div>
+        
+
+
+          {/* fade into hero */}
+          <div className="absolute -top-20 left-0 w-full h-20 " />
+        </div>
+    </section>
 
       {/* ================= FLOATING CONTENT ================= */}
       <section
@@ -70,7 +137,6 @@ export default function LandingPage() {
           backgroundPosition: "center",
         }}
       >
-
         {/* WHY CARD */}
         <div className="max-w-4xl mx-auto mb-20">
           <div className="rounded-3xl bg-white shadow-xl p-10 md:p-14">
@@ -99,7 +165,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* ================= HOW IT WORKS ================= */}
+        {/* HOW IT WORKS */}
         <div className="max-w-6xl mx-auto mb-20">
           <div className="rounded-3xl bg-white shadow-xl p-10 md:p-16">
             <h2 className="text-3xl font-bold text-center mb-12">
@@ -109,9 +175,7 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-4 gap-10 text-center">
               <div>
                 <span className="text-3xl">📍</span>
-                <h4 className="mt-4 font-semibold text-lg">
-                  Discover
-                </h4>
+                <h4 className="mt-4 font-semibold text-lg">Discover</h4>
                 <p className="mt-2 text-gray-600">
                   Browse activities happening near you.
                 </p>
@@ -119,9 +183,7 @@ export default function LandingPage() {
 
               <div>
                 <span className="text-3xl">➕</span>
-                <h4 className="mt-4 font-semibold text-lg">
-                  Join or Create
-                </h4>
+                <h4 className="mt-4 font-semibold text-lg">Join or Create</h4>
                 <p className="mt-2 text-gray-600">
                   Join instantly or host your own activity.
                 </p>
@@ -130,7 +192,7 @@ export default function LandingPage() {
               <div>
                 <span className="text-3xl">💬</span>
                 <h4 className="mt-4 font-semibold text-lg">
-                  Coordinate with GROUP CHAT
+                  Coordinate with Group Chat
                 </h4>
                 <p className="mt-2 text-gray-600">
                   Chat, plan, and stay updated in one place.
@@ -140,10 +202,10 @@ export default function LandingPage() {
               <div>
                 <span className="text-3xl">🌍</span>
                 <h4 className="mt-4 font-semibold text-lg">
-                  Experience LIVE LOCATION SHARING
+                  Live Location Sharing
                 </h4>
                 <p className="mt-2 text-gray-600">
-                  Option to share live location to the host for outdoor activities
+                  Optional live location sharing for outdoor activities.
                 </p>
               </div>
             </div>
@@ -153,19 +215,16 @@ export default function LandingPage() {
         {/* CTA CARD */}
         <div className="max-w-5xl mx-auto">
           <div className="relative rounded-3xl bg-white shadow-xl p-12 text-center overflow-hidden">
-            <div className="absolute -top-16 -right-16 w-40 h-40 bg-green-100 rounded-full opacity-50" />
-            <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-green-200 rounded-full opacity-40" />
-
-            <h2 className="text-3xl font-bold relative">
+            <h2 className="text-3xl font-bold">
               Your city is full of life.
             </h2>
-            <p className="mt-4 text-gray-600 text-lg relative">
+            <p className="mt-4 text-gray-600 text-lg">
               You just need a reason to step out.
             </p>
 
             <button
               onClick={() => navigate("/home")}
-              className="relative mt-8 px-8 py-3 bg-black text-white rounded-lg text-lg hover:bg-gray-800"
+              className="mt-8 px-8 py-3 bg-black text-white rounded-lg text-lg hover:bg-gray-800"
             >
               Start Exploring
             </button>

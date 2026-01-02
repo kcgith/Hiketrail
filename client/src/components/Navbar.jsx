@@ -25,9 +25,15 @@ return (
       <div className="flex items-center justify-between">
 
         {/* LOGO */}
-        <Link to="/" className="text-xl font-bold text-green-600">
+        <div className="flex gap-4 items-center">
+        <Link to="/" className="text-2xl font-bold text-green-500">
           OutsideR
         </Link>
+        <Link to="/home" className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800">
+          Explore
+        </Link>
+        </div>
+        
 
         {/* DESKTOP RIGHT */}
         <div className="hidden md:flex items-center gap-4">
@@ -66,7 +72,7 @@ return (
 
               <button
                 onClick={() => setAuthModal("register")}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800"
               >
                 Sign Up
               </button>

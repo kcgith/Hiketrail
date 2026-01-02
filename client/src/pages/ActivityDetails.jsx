@@ -221,7 +221,7 @@ return (
               className={`
                 px-4 py-2 rounded-lg text-sm font-medium transition
                 ${isParticipant
-                  ? "bg-green-600 text-white hover:bg-green-700"
+                  ? "bg-green-700 text-white hover:bg-green-800"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"}
               `}
             >
@@ -340,7 +340,7 @@ return (
           <>
             <button
               onClick={() => navigate(`/activities/${activity._id}/chat`)}
-              className="flex-1 py-3 bg-green-600 text-white rounded-lg font-medium"
+              className="flex-1 py-3 bg-green-700 text-white rounded-lg font-medium"
             >
               Chat
             </button>
