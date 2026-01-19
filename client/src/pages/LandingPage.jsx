@@ -14,30 +14,35 @@ export default function LandingPage() {
         className="relative min-h-screen text-white flex flex-col justify-between"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/hero1.jpg')",
+            "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/hero2.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         {/* ================= HERO CONTENT ================= */}
-        <div className="relative z-10 flex-1 flex items-center justify-center px-6 mt-15">
+        <div className="relative z-30 flex-1 flex items-center justify-center px-6 mt-20">
           <div className="text-center max-w-3xl w-full">
             <h1 className="text-2xl md:text-2xl font-bold leading-tight">
-              Get out there.
+              Step outside.
               <br />
-              Meet people.
+              Meet reality.
               <br />
               Create memories.
             </h1>
 
             <p className="mt-5 text-lg md:text-xl text-gray-200">
-              Discover nearby activities. Join real people.
+              Discover nearby activities. Hike, An indoor game, Sight-seeing. Any group activity.
               Step out of your home and into real experiences.
             </p>
 
             {/* SEARCH + CREATE (SAME ROW) */}
             <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
-              <div className="inline-flex justify-center bg-white/95 backdrop-blur-md p-3 rounded-xl shadow-lg text-black">
+              <div className="
+                  w-full sm:w-auto
+                  flex justify-center
+                  bg-white/95 backdrop-blur-md
+                  p-3 rounded-xl shadow-lg text-black
+                ">
                 <SearchAutocomplete />
               </div>
 
@@ -55,76 +60,89 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* ================= ACTIVITY CAROUSEL (BOTTOM FIXED) ================= */}
-        <div className="relative z-20 w-full">
-        <div className="bg-black/75 backdrop-blur-md px-4 pt-3 pb-2">
-            <h3 className="text-sm font-semibold mb-2">
+        {/* ================= ACTIVITY CAROUSEL ================= */}
+      <div className="relative z-20 w-full mt-3">
+        <div className="bg-black/15 backdrop-blur-md px-4 pt-3 pb-2">
+          <h3 className="text-sm font-semibold mb-4">
             Activities near you
-            </h3>
+          </h3>
 
-            {loading ? (
+          {loading ? (
+            <p className="text-sm text-gray-300">Loading activities…</p>
+          ) : activities.length === 0 ? (
             <p className="text-sm text-gray-300">
-                Loading activities…
+              No activities yet. Be the first to create one.
             </p>
-            ) : activities.length === 0 ? (
-            <p className="text-sm text-gray-300">
-                No activities yet. Be the first to create one.
-            </p>
-            ) : (
+          ) : (
             <div className="relative">
-                {/* SCROLL CONTAINER */}
-                <div
+              {/* SCROLL CONTAINER */}
+              <div
                 id="landing-activity-carousel"
                 className="
-                    flex items-center gap-5
-            overflow-x-hidden overflow-y-hidden
-            scroll-smooth snap-x snap-mandatory
-            hide-scrollbar
+                  flex items-center gap-6
+                  overflow-x-auto overflow-y-hidden
+                  scroll-smooth snap-x snap-mandatory
+                  hide-scrollbar
+                  touch-pan-x
                 "
-                style={{ minHeight: "300px" }}   // 👈 keeps it compact
-                >
+                style={{ height: "300px" }}
+              >
                 {activities.map((activity) => (
-                    <div
+                  <div
                     key={activity._id}
-                    className="snap-start shrink-0 flex place-items-center"
-                    style={{ width: "280px", height: "100%" }}    // 👈 smaller card width
-                    >
-                    <div className="p-4 w-full flex items-end">
-                        <ActivityCard activity={activity} />
+                    className="snap-start shrink-0 flex items-center"
+                    style={{ width: "280px", height: "100%" }}
+                  >
+                    <div className="w-full h-full flex items-end">
+                      <ActivityCard activity={activity} />
                     </div>
-                    </div>
+                  </div>
                 ))}
-                </div>
+              </div>
 
-                {/* RIGHT ARROW */}
-                <button
+              {/* LEFT ARROW */}
+              <button
                 onClick={() => {
-                    const el = document.getElementById("landing-activity-carousel");
-                    el?.scrollBy({ left: 220, behavior: "smooth" });
+                  const el = document.getElementById("landing-activity-carousel");
+                  el?.scrollBy({ left: -280, behavior: "smooth" });
                 }}
                 className="
-                    absolute right-0 top-1/2 -translate-y-1/2
-                    bg-black/70 hover:bg-black
-                    text-white
-                    p-2 rounded-full
-                    backdrop-blur
+                  absolute left-1 top-1/2 -translate-y-1/2
+                  bg-black/70 hover:bg-black
+                  text-white p-2 rounded-full
+                  backdrop-blur z-30
                 "
-                aria-label="Scroll activities"
-                >
+                aria-label="Scroll left"
+              >
+                ◀
+              </button>
+
+              {/* RIGHT ARROW */}
+              <button
+                onClick={() => {
+                  const el = document.getElementById("landing-activity-carousel");
+                  el?.scrollBy({ left: 280, behavior: "smooth" });
+                }}
+                className="
+                  absolute right-1 top-1/2 -translate-y-1/2
+                  bg-black/70 hover:bg-black
+                  text-white p-2 rounded-full
+                  backdrop-blur z-30
+                "
+                aria-label="Scroll right"
+              >
                 ▶
-                </button>
+              </button>
 
-                {/* FADE ON RIGHT */}
-                <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black/80 to-transparent" />
+              {/* GRADIENT FADES (VISUAL ONLY) */}
+              <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-black/80 to-transparent" />
+              <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black/80 to-transparent" />
             </div>
-            )}
+          )}
         </div>
+      </div>
+
         
-
-
-          {/* fade into hero */}
-          <div className="absolute -top-20 left-0 w-full h-20 " />
-        </div>
     </section>
 
       {/* ================= FLOATING CONTENT ================= */}
@@ -132,7 +150,7 @@ export default function LandingPage() {
         className="relative py-24 px-4"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/hero2.jpg')",
+            "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/hero1.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

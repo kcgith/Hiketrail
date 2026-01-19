@@ -6,10 +6,14 @@ const FALLBACK_LOCATION = {
   lng: 77.5946, // Bengaluru
 };
 
+// 🔹 simple in-memory cache
+let cachedResult = null;
+let cachedCoordsKey = null;
+
 export function useNearbyActivities({ autoLocate = false } = {}) {
   const [coords, setCoords] = useState(FALLBACK_LOCATION);
-  const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [activities, setActivities] = useState(cachedResult || []);
+  const [loading, setLoading] = useState(!cachedResult);
   const [locationError, setLocationError] = useState(false);
 
   // Optional: auto-detect user location (Home only)
@@ -33,6 +37,15 @@ export function useNearbyActivities({ autoLocate = false } = {}) {
 
   // Fetch activities
   useEffect(() => {
+    const coordsKey = `${coords.lat},${coords.lng}`;
+
+    // ✅ Use cache if available
+    if (cachedCoordsKey === coordsKey && cachedResult) {
+      setActivities(cachedResult);
+      setLoading(false);
+      return;
+    }
+
     const fetchActivities = async () => {
       try {
         setLoading(true);
@@ -40,6 +53,10 @@ export function useNearbyActivities({ autoLocate = false } = {}) {
           `/activities/nearby?lat=${coords.lat}&lng=${coords.lng}&radius=500`,
           { headers: { "Cache-Control": "no-store" } }
         );
+
+        cachedResult = res.data;
+        cachedCoordsKey = coordsKey;
+
         setActivities(res.data);
       } catch (err) {
         console.error("Failed to fetch activities", err);
@@ -56,6 +73,6 @@ export function useNearbyActivities({ autoLocate = false } = {}) {
     loading,
     coords,
     locationError,
-    setCoords, // Home can still control location manually
+    setCoords,
   };
 }

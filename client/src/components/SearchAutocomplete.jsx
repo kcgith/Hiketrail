@@ -51,12 +51,12 @@ export default function SearchAutocomplete({ initial = "" }) {
   }, []);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative w-full " ref={ref}>
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search trails..."
-        className="w-64 border px-3 py-2 rounded-lg focus:outline-none"
+        placeholder="Search activity..."
+        className="w-full border px-3 py-2 rounded-lg focus:outline-none"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             navigate(`/search?q=${encodeURIComponent(query)}`);
@@ -66,7 +66,7 @@ export default function SearchAutocomplete({ initial = "" }) {
       />
 
       {open && (
-        <div className="absolute z-50 mt-1 w-64 bg-white border rounded shadow">
+        <div className="absolute z-50 mt-1 w-full bg-white border rounded shadow">
           {suggestions.map((s) => (
             <div
               key={s._id}

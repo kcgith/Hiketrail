@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useRef, useEffect} from "react";
 import { Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import SearchAutocomplete from "../components/SearchAutocomplete";
@@ -12,22 +12,57 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === "/";
-  
+  const dropdownRef = useRef(null);
+
+useEffect(() => {
+  if (!menuOpen) return;
+
+  function handleClick(e) {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setMenuOpen(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClick);
+  return () => document.removeEventListener("mousedown", handleClick);
+}, [menuOpen]);
 
 return (
   <>
     <nav
       className={`
         w-full px-6 py-3 fixed top-0 left-0 z-40 transition-all
-        ${isLanding ? "bg-transparent text-white" : "bg-white shadow-md"}
+        ${isLanding ? "bg-white/15 backdrop-blur-md" : "bg-white shadow-md"}
       `}
     >
       <div className="flex items-center justify-between">
 
         {/* LOGO */}
         <div className="flex gap-4 items-center">
-        <Link to="/" className="text-2xl font-bold text-green-500">
-          OutsideR
+          <Link to="/" className="relative inline-block">
+      {/* subtle local background for contrast */}
+          <span
+            className="
+              absolute inset-0
+              bg-white/40 backdrop-blur-md
+              rounded-lg
+              -z-10
+            "
+          />
+
+          {/* brand text */}
+          <span
+            className="
+              relative
+              px-2 py-1
+              text-2xl font-bold tracking-tight
+              text-gray-900
+            "
+          >
+            Outside
+            <span className="text-green-800 font-extrabold">R</span>
+            <span className="text-red-700">.</span>
+          </span>
         </Link>
         <Link to="/home" className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800">
           Explore
@@ -65,9 +100,9 @@ return (
             <>
               <button
                 onClick={() => setAuthModal("login")}
-                className="hover:text-green-600"
+                className="hover:text-green-700 text-green-600"
               >
-                Login
+                Log In
               </button>
 
               <button
@@ -82,7 +117,7 @@ return (
 
               <Link
                 to="/activities/create"
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 mr-2"
+                className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 mr-2"
               >
                 New Activity
               </Link>
@@ -96,27 +131,44 @@ return (
                   className="w-10 h-10 rounded-full"
                   alt="avatar"
                 />
-                <span className="text-sm font-medium">
+                <span className={`text-sm font-medium ${isLanding? "text-white": "text-black"}`}>
                   {user.name}
                 </span>
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-3 w-40 bg-white shadow-lg text-gray-700 rounded-lg p-2 z-50">
-                  <Link to="/profile" className="block px-3 py-2 hover:bg-gray-100">Profile</Link>
-                  
-                  <Link to="/settings" className="block px-3 py-2 hover:bg-gray-100">Settings</Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
+                <div ref={dropdownRef}
+                className="absolute right-0 mt-12 w-35 z-50  bg-white shadow-lg rounded-lg flex flex-col
+                  bg-gradient-to-b from-gray-50 via-gray to-gray-200 p-3
+                     items-center">
+                    <Link
+                      to="/profile"
+                      onClick={() => setMenuOpen(false)}
+                      className=" w-full text-center px-2 py-1 rounded-xl hover:bg-gray-300"
+                    >
+                      Profile
+                    </Link>
+
+                    <Link
+                      to="/settings"
+                      onClick={() => setMenuOpen(false)}
+                      className="w-full text-center px-2 py-1 rounded-xl hover:bg-gray-300"
+                    >
+                      Settings
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        logout();
+                        navigate("/");
+                      }}
+                      className="w-full text-center px-2 py-1 rounded-xl hover:bg-gray-300"
+                    >
+                      Logout
+                    </button>
                 </div>
-              )}
+                )}
             </div>
           )}
         </div>
@@ -180,54 +232,119 @@ return (
 
 
     {/* ================= MOBILE SIDE DRAWER ================= */}
-    {menuOpen && (
-      <div className="fixed inset-0 z-50">
-        <div
-          className="absolute inset-0 bg-black/30"
-          onClick={() => setMenuOpen(false)}
-        />
+    {/* MOBILE DRAWER */}
+  <div
+    className={`
+      fixed inset-0 z-50
+      transition-opacity duration-300 md:hidden
+      ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+    `}
+  >
+    {/* OVERLAY */}
+    <div
+      className="absolute inset-0 bg-black/30"
+      onClick={() => setMenuOpen(false)}
+    />
 
-        <div className="absolute right-0 top-0 h-full w-50 bg-white shadow-xl p-4">
-          {!user ? (
-            <div className="flex flex-col gap-4">
-              <button onClick={() => setAuthModal("login")}>Login</button>
-              <button
-                onClick={() => setAuthModal("register")}
-                className="bg-green-600 text-white py-2 rounded"
-              >
-                Sign Up
-              </button>
-            </div>
-          ) : (
+    {/* DRAWER */}
+    <div
+      className={`
+        absolute right-0 top-0 min-h-fit w-50
+        bg-gradient-to-b from-gray-50 via-gray to-gray-200
+        shadow-2xl
+        p-5
+        transform transition-transform duration-300 ease-out
+        ${menuOpen ? "translate-x-0" : "translate-x-full"}
+        rounded-l-2xl
+      `}
+    >
+      {!user ? (
+        <div className="flex flex-col gap-4 mt-4">
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              setAuthModal("login");
+            }}
+            className="text-sm font-medium text-gray-600 hover:text-black mt-2 cursor-pointer"
+          >
+            Log In
+          </button>
 
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2 ">
-                <img
-                    src={user.avatar || "https://i.pravatar.cc/40"}
-                    className="w-10 h-10 rounded-full"
-                    alt="avatar"
-                  />
-                  <span className="text-sm font-medium ">
-                    {user.name}
-                  </span>
-              </div>
-              <Link
-                to="/activities/create"
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 mr-2"
-              >
-                New Activity
-              </Link>
-              <Link to="/profile">Profile</Link>
-              
-              <Link to="/settings">Settings</Link>
-              <button onClick={logout} className="text-left">
-                Logout
-              </button>
-            </div>
-          )}
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              setAuthModal("register");
+            }}
+            className="
+              bg-emerald-600 hover:bg-emerald-700
+              text-white py-2 rounded-lg
+              transition
+            "
+          >
+            Sign Up
+          </button>
         </div>
-      </div>
-    )}
+      ) : (
+        <div className="flex flex-col items-center gap-3 mt-4">
+          {/* USER INFO */}
+          <div className="flex items-center gap-2 mb-2">
+            <img
+              src={user.avatar || "https://i.pravatar.cc/40"}
+              className="w-10 h-10 rounded-full"
+              alt="avatar"
+            />
+            <span className="text-sm font-medium">
+              {user.name}
+            </span>
+          </div>
+
+          {/* ACTIONS */}
+          <Link
+            to="/activities/create"
+            onClick={() => setMenuOpen(false)}
+            className="
+              w-full text-center
+              px-4 py-2
+              bg-emerald-600 hover:bg-emerald-700
+              text-white rounded-lg
+              transition
+            "
+          >
+            New Activity
+          </Link>
+
+          <Link
+            to="/profile"
+            onClick={() => setMenuOpen(false)}
+            className="text-sm font-medium"
+          >
+            Profile
+          </Link>
+
+          <Link
+            to="/settings"
+            onClick={() => setMenuOpen(false)}
+            className="text-sm font-medium"
+          >
+            Settings
+          </Link>
+
+          <button
+            onClick={() => {
+              setMenuOpen(false);   // 🔑 close first
+              logout();
+              navigate("/");
+            }}
+            className="text-sm font-medium text-gray-600 hover:text-black mt-2 cursor-pointer"
+          >
+            Logout
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+
+    
   </>
 );
 }
