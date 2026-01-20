@@ -56,7 +56,7 @@ export default function SearchAutocomplete({ initial = "" }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search activity..."
-        className="w-full border px-3 py-2 rounded-lg focus:outline-none"
+        className="w-full  rounded-lg focus:outline-none"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             navigate(`/search?q=${encodeURIComponent(query)}`);

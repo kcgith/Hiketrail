@@ -47,7 +47,7 @@ export default function Register() {
     isOpen={authModal === "register"}
     onClose={() => setAuthModal(null)}
   >
-    <h2 className="text-2xl font-semibold mb-4">Create new account</h2>
+    <h2 className="text-2xl font-semibold mb-4">Create New account</h2>
 
     <form onSubmit={handleSubmit} className="space-y-4">
 

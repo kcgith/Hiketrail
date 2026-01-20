@@ -12,19 +12,34 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === "/";
+  const desktopButtonRef = useRef(null);
   const dropdownRef = useRef(null);
+  const mobileDrawerRef = useRef(null);
 
 useEffect(() => {
   if (!menuOpen) return;
 
   function handleClick(e) {
-    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    // 1. Check if the click was on the hamburger button itself 
+    // (to prevent double-toggling)
+    if (desktopButtonRef.current?.contains(e.target)) return;
+    // if (e.target.closest('button') && e.target.innerText === '☰') return;
+    if (e.target.closest('.hamburger-btn')) return;
+
+    // 2. See if the click landed inside either the desktop dropdown OR the mobile drawer
+    const insideDesktop = dropdownRef.current?.contains(e.target);
+    const insideMobile = mobileDrawerRef.current?.contains(e.target);
+
+    // 3. ONLY close if the click was outside BOTH
+    if (!insideDesktop && !insideMobile) {
       setMenuOpen(false);
     }
   }
 
-  document.addEventListener("mousedown", handleClick);
-  return () => document.removeEventListener("mousedown", handleClick);
+  // Use 'click' instead of 'mousedown'—mousedown is often too fast 
+  // and fires before the Link component can process the 'click' event.
+  document.addEventListener("click", handleClick);
+  return () => document.removeEventListener("click", handleClick);
 }, [menuOpen]);
 
 return (
@@ -100,7 +115,7 @@ return (
             <>
               <button
                 onClick={() => setAuthModal("login")}
-                className="hover:text-green-700 text-green-600"
+                className="hover:bg-white/10 text-black  bg-white/40 backdrop-blur-md px-4 py-2 rounded-lg"
               >
                 Log In
               </button>
@@ -123,6 +138,7 @@ return (
               </Link>
 
               <button
+                ref={desktopButtonRef}
                 onClick={() => setMenuOpen((v) => !v)}
                 className="flex items-center gap-2"
               >
@@ -163,7 +179,7 @@ return (
                         logout();
                         navigate("/");
                       }}
-                      className="w-full text-center px-2 py-1 rounded-xl hover:bg-gray-300"
+                      className="w-full text-center px-2 py-1 rounded-xl hover:bg-gray-300 hover:cursor-pointer"
                     >
                       Logout
                     </button>
@@ -196,7 +212,7 @@ return (
           )}
 
           {/* HAMBURGER */}
-          <button onClick={() => setMenuOpen(true)}>
+          <button className="hamburger-btn" onClick={() => setMenuOpen(true)}>
             ☰
           </button>
         </div>
@@ -233,13 +249,8 @@ return (
 
     {/* ================= MOBILE SIDE DRAWER ================= */}
     {/* MOBILE DRAWER */}
-  <div
-    className={`
-      fixed inset-0 z-50
-      transition-opacity duration-300 md:hidden
-      ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
-    `}
-  >
+ {menuOpen && (
+  <div className="fixed inset-0 z-50 md:hidden">
     {/* OVERLAY */}
     <div
       className="absolute inset-0 bg-black/30"
@@ -248,82 +259,69 @@ return (
 
     {/* DRAWER */}
     <div
-      className={`
-        absolute right-0 top-0 min-h-fit w-50
-        bg-gradient-to-b from-gray-50 via-gray to-gray-200
-        shadow-2xl
-        p-5
+      ref={mobileDrawerRef}
+      // onClick={(e) => e.stopPropagation()}
+      className="
+        absolute right-0 top-0 h-fit w-50
+        bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200
+        shadow-2xl p-5 rounded-l-2xl
         transform transition-transform duration-300 ease-out
-        ${menuOpen ? "translate-x-0" : "translate-x-full"}
-        rounded-l-2xl
-      `}
+        translate-x-0
+      "
     >
       {!user ? (
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col gap-4  bg-gray-50">
           <button
             onClick={() => {
-              setMenuOpen(false);
-              setAuthModal("login");
+              setAuthModal('login');
+              setMenuOpen(false); 
             }}
-            className="text-sm font-medium text-gray-600 hover:text-black mt-2 cursor-pointer"
+            className=" font-medium text-gray-700 hover:cursor-pointer py-2  bg-gray-300 rounded-lg"
           >
             Log In
           </button>
-
           <button
             onClick={() => {
-              setMenuOpen(false);
-              setAuthModal("register");
+              setAuthModal('register');
+              setMenuOpen(false); 
             }}
-            className="
-              bg-emerald-600 hover:bg-emerald-700
-              text-white py-2 rounded-lg
-              transition
-            "
+            className="bg-emerald-600 text-white py-2 rounded-lg hover:cursor-pointer"
           >
             Sign Up
           </button>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 mt-4">
+        <div className="flex flex-col items-center gap-4 mt-6">
           {/* USER INFO */}
           <div className="flex items-center gap-2 mb-2">
             <img
-              src={user.avatar || "https://i.pravatar.cc/40"}
+              src={user.avatar || 'https://i.pravatar.cc/40'}
               className="w-10 h-10 rounded-full"
               alt="avatar"
             />
-            <span className="text-sm font-medium">
-              {user.name}
-            </span>
+            <span className="text-sm font-medium">{user.name}</span>
           </div>
 
-          {/* ACTIONS */}
+          {/* LINKS — ADDED onClick={() => setMenuOpen(false)} */}
           <Link
             to="/activities/create"
             onClick={() => setMenuOpen(false)}
-            className="
-              w-full text-center
-              px-4 py-2
-              bg-emerald-600 hover:bg-emerald-700
-              text-white rounded-lg
-              transition
-            "
+            className="w-full text-center px-4 py-2 bg-emerald-600 text-white rounded-lg"
           >
             New Activity
           </Link>
 
-          <Link
-            to="/profile"
-            onClick={() => setMenuOpen(false)}
+          <Link 
+            to="/profile" 
+            onClick={() => setMenuOpen(false)} 
             className="text-sm font-medium"
           >
             Profile
           </Link>
 
-          <Link
-            to="/settings"
-            onClick={() => setMenuOpen(false)}
+          <Link 
+            to="/settings" 
+            onClick={() => setMenuOpen(false)} 
             className="text-sm font-medium"
           >
             Settings
@@ -331,11 +329,11 @@ return (
 
           <button
             onClick={() => {
-              setMenuOpen(false);   // 🔑 close first
               logout();
-              navigate("/");
+              navigate('/');
+              setMenuOpen(false); // Close menu after logout
             }}
-            className="text-sm font-medium text-gray-600 hover:text-black mt-2 cursor-pointer"
+            className="text-sm font-medium text-gray-600 mt-2 hover:cursor-pointer"
           >
             Logout
           </button>
@@ -343,7 +341,7 @@ return (
       )}
     </div>
   </div>
-
+)}
     
   </>
 );

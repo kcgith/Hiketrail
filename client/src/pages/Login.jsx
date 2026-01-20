@@ -45,7 +45,7 @@ export default function Login() {
     isOpen={authModal === "login"}
     onClose={() => setAuthModal(null)}
   >
-    <h2 className="text-2xl font-semibold mb-4">Welcome back</h2>
+    <h2 className="text-2xl font-semibold mb-4">Log in to continue</h2>
 
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (

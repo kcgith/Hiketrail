@@ -40,7 +40,7 @@ export default function LandingPage() {
               <div className="
                   w-full sm:w-auto
                   flex justify-center
-                  bg-white/95 backdrop-blur-md
+                  bg-white/80 backdrop-blur-md
                   p-3 rounded-xl shadow-lg text-black
                 ">
                 <SearchAutocomplete />
@@ -49,7 +49,7 @@ export default function LandingPage() {
               <button
                 onClick={() => navigate("/activities/create")}
                 className="
-                  px-6 py-3 bg-green-700 hover:bg-green-800
+                  p-3 bg-green-700 hover:bg-green-800
                   rounded-xl text-lg font-semibold
                   whitespace-nowrap
                 "
