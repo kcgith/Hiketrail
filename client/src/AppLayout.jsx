@@ -13,12 +13,16 @@ import SearchResults from "./pages/SearchResults";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { useNearbyActivities } from "./hooks/useNearbyActivities";
 
 function AppLayout() {
   const location = useLocation();
   const { authModal } = useAuth();
 
   const isLanding = location.pathname === "/";
+
+  useNearbyActivities({autoLocate:false})
+
 
   return (
     <>

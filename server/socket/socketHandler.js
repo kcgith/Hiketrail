@@ -1,4 +1,4 @@
-// socket/socketHandler.js
+
 import Chat from "../models/Chat.js";
 import LiveLocation from "../models/LiveLocation.js";
 
